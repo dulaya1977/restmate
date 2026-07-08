@@ -1,0 +1,1526 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="RestMate step-by-step landing guide for setup, 7-day buffer workflow, voyage UTC offsets, crew grid entry, checks, export/import, and merge." />
+  <title>RestMate</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #eef3fa;
+      --ink: #0f1f36;
+      --muted: #5d6b80;
+      --line: #d6e0ed;
+      --primary: #1e3a5f;
+      --secondary: #2563eb;
+      --accent: #a16207;
+      --ok: #0f766e;
+      --warn: #b45309;
+      --danger: #b91c1c;
+      --shadow: 0 22px 55px rgba(30, 58, 95, 0.12);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --max: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 84px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% -8%, #dbe9ff 0%, transparent 36%),
+        radial-gradient(circle at 90% 15%, #d8f7ef 0%, transparent 32%),
+        linear-gradient(180deg, #f8fbff 0%, #f3f7fd 100%);
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .top-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      z-index: 100;
+      background: transparent;
+    }
+
+    .top-progress > span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #0f766e);
+      transition: width 0.08s linear;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(12px);
+      background: rgba(244, 248, 255, 0.88);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      min-height: 66px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: var(--primary);
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 900;
+      color: #123056;
+      background: linear-gradient(145deg, #f6fbff 0%, #bfdbfe 55%, #7ee7d0 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 5px 16px rgba(16, 34, 59, 0.16);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .top-links a {
+      padding: 6px 11px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: all 220ms ease;
+    }
+
+    .top-links a:hover,
+    .top-links a.active {
+      color: #0d2d52;
+      background: #e7eef9;
+      border-color: #ccdaed;
+    }
+
+    .top-links a.demo-link {
+      color: #154e46;
+      background: #e8faf5;
+      border-color: #b9e9dd;
+      font-weight: 700;
+    }
+
+    .top-links a.demo-link:hover {
+      background: #dff6ef;
+      border-color: #9fdccd;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 72px 20px 58px;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(1px);
+      animation: drift 9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 320px;
+      height: 320px;
+      right: -95px;
+      top: -65px;
+      background: radial-gradient(circle at 28% 28%, rgba(37, 99, 235, 0.33), rgba(37, 99, 235, 0));
+    }
+
+    .hero::after {
+      width: 280px;
+      height: 280px;
+      left: -82px;
+      bottom: -100px;
+      background: radial-gradient(circle at 68% 32%, rgba(15, 118, 110, 0.26), rgba(15, 118, 110, 0));
+      animation-delay: -2.5s;
+    }
+
+    .hero-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .hero-main {
+      background: linear-gradient(140deg, #193861 0%, #1f4574 53%, #245593 100%);
+      color: #fff;
+      border-radius: 26px;
+      padding: 36px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::before {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      border-radius: 44px;
+      right: -76px;
+      bottom: -76px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transform: rotate(18deg);
+      opacity: 0.8;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #a7f3d0;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(32px, 4.8vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.7px;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      margin: 15px 0 24px;
+      color: rgba(239, 246, 255, 0.88);
+      font-size: clamp(16px, 2.2vw, 20px);
+      max-width: 48ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 11px;
+      padding: 11px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      color: #10243f;
+      background: #d5f6ec;
+      border-color: #7cd8bf;
+    }
+
+    .btn-ghost {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stat-card,
+    .note-card {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(200, 215, 232, 0.75);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 14px 30px rgba(30, 58, 95, 0.08);
+      backdrop-filter: blur(4px);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-item {
+      border: 1px solid #d6e3f3;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f9fcff 0%, #ecf3fb 100%);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 23px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-item small {
+      display: block;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.1px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      background: #edf3fb;
+      border: 1px solid #d0ddee;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      color: #1f3e66;
+      font-weight: 700;
+    }
+
+    .main {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px 90px;
+    }
+
+    .section {
+      padding: 72px 0;
+      border-top: 1px solid rgba(211, 223, 238, 0.72);
+    }
+
+    .section-head {
+      margin-bottom: 24px;
+      max-width: 74ch;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 9px;
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.75px;
+      text-transform: uppercase;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.08;
+      letter-spacing: -0.5px;
+    }
+
+    .section-desc {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 19px;
+      box-shadow: 0 10px 26px rgba(24, 44, 74, 0.06);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(24, 44, 74, 0.1);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .card p,
+    .card li {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .card ul {
+      margin: 10px 0 0;
+      padding-left: 16px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      position: relative;
+      padding-left: 26px;
+      counter-reset: flow;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 3px;
+      bottom: 3px;
+      width: 2px;
+      background: linear-gradient(180deg, #2563eb 0%, #0f766e 100%);
+      opacity: 0.34;
+      border-radius: 999px;
+    }
+
+    .step {
+      counter-increment: flow;
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 14px 14px 16px;
+      box-shadow: 0 8px 20px rgba(30, 58, 95, 0.06);
+    }
+
+    .step::before {
+      content: counter(flow);
+      position: absolute;
+      left: -27px;
+      top: 12px;
+      width: 21px;
+      height: 21px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(180deg, #2563eb, #0f766e);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.13);
+    }
+
+    .step strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: #102742;
+    }
+
+    .warn-box,
+    .ok-box,
+    .info-box {
+      border-radius: 13px;
+      padding: 14px 15px;
+      border-left: 4px solid;
+      font-size: 14px;
+    }
+
+    .warn-box {
+      color: #7a4312;
+      border-color: #d97706;
+      background: #fff4e6;
+    }
+
+    .ok-box {
+      color: #135347;
+      border-color: #0f766e;
+      background: #e9fbf6;
+    }
+
+    .info-box {
+      color: #14325a;
+      border-color: #2563eb;
+      background: #eaf1ff;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 720px;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #e6edf7;
+      text-align: left;
+      vertical-align: top;
+      padding: 11px 12px;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f6f9ff;
+      color: #325175;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    code {
+      background: #f2f6fc;
+      border: 1px solid #d9e5f3;
+      color: #143058;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .report-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 128px;
+      box-shadow: 0 8px 20px rgba(30, 58, 95, 0.06);
+    }
+
+    .report-card h3 {
+      margin: 0 0 8px;
+      color: #15335a;
+      font-size: 17px;
+    }
+
+    .report-card p,
+    .report-card li {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .report-card ul {
+      margin: 8px 0 0;
+      padding-left: 16px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .symbol-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .symbol-pill {
+      border-radius: 999px;
+      padding: 5px 10px;
+      border: 1px solid;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .symbol-pill i {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sym-ok { color: #145148; border-color: #86d7c5; background: #e9fbf6; }
+    .sym-ok i { background: #cef4ea; }
+    .sym-warn { color: #7a430f; border-color: #f6c987; background: #fff3de; }
+    .sym-warn i { background: #ffe8c2; }
+    .sym-err { color: #792627; border-color: #f2abab; background: #fff0f0; }
+    .sym-err i { background: #ffdada; }
+    .sym-info { color: #1b3f6f; border-color: #b8d0f3; background: #edf3ff; }
+    .sym-info i { background: #dbe9ff; }
+
+    .checklist-wrap {
+      background: linear-gradient(150deg, #163252 0%, #1e436f 62%, #1e4f84 100%);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      color: #eef4ff;
+      box-shadow: var(--shadow);
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid rgba(196, 214, 241, 0.26);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 11px 11px;
+      transition: background-color 180ms ease, border-color 180ms ease;
+    }
+
+    .check-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(196, 214, 241, 0.45);
+    }
+
+    .check-item input {
+      margin-top: 2px;
+      width: 18px;
+      height: 18px;
+      accent-color: #6ee7d1;
+      cursor: pointer;
+    }
+
+    .check-item span {
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(239, 246, 255, 0.96);
+    }
+
+    .check-tools {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: rgba(222, 234, 255, 0.9);
+    }
+
+    .check-tools button {
+      border: 1px solid rgba(173, 202, 240, 0.55);
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 7px 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .faq {
+      display: grid;
+      gap: 10px;
+    }
+
+    details {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 14px;
+      box-shadow: 0 8px 18px rgba(24, 44, 74, 0.06);
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      font-weight: 700;
+      color: #1a365a;
+      position: relative;
+      padding-right: 26px;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 0;
+      top: -1px;
+      font-size: 20px;
+      color: #59739a;
+      transition: transform 180ms ease;
+    }
+
+    details[open] summary::after { transform: rotate(45deg); }
+
+    details p {
+      margin: 10px 0 2px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 26px;
+      border-top: 1px solid rgba(204, 216, 233, 0.85);
+      padding-top: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .promo-section {
+      padding: 10px 0 0;
+    }
+
+    .promo-wrap {
+      border-radius: 24px;
+      padding: 26px;
+      border: 1px solid #bcd2f0;
+      background:
+        radial-gradient(circle at 88% 14%, rgba(154, 227, 211, 0.38), transparent 42%),
+        radial-gradient(circle at 0% 100%, rgba(131, 169, 255, 0.25), transparent 36%),
+        linear-gradient(130deg, #0f2f52 0%, #18477a 62%, #236299 100%);
+      color: #f1f6ff;
+      box-shadow: 0 22px 52px rgba(16, 40, 70, 0.24);
+    }
+
+    .promo-headline {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      max-width: 16ch;
+    }
+
+    .promo-copy {
+      margin: 12px 0 0;
+      color: rgba(237, 246, 255, 0.9);
+      max-width: 66ch;
+      font-size: 16px;
+    }
+
+    .promo-points {
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .promo-points li {
+      border: 1px solid rgba(210, 227, 255, 0.4);
+      border-radius: 12px;
+      padding: 10px 11px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      font-weight: 600;
+      color: #eaf2ff;
+    }
+
+    .promo-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .promo-subtitle {
+      margin: 22px 0 8px;
+      font-size: 12px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #b9d3f8;
+      font-weight: 800;
+    }
+
+    .promo-proof-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .promo-proof {
+      border: 1px solid rgba(210, 227, 255, 0.38);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .promo-proof h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .promo-proof p {
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #d7e6fc;
+    }
+
+    .promo-btn {
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: transform 160ms ease, background-color 160ms ease;
+    }
+
+    .promo-btn:hover { transform: translateY(-1px); }
+
+    .promo-btn-primary {
+      color: #113154;
+      background: #d9f8ee;
+      border-color: #88e0c7;
+    }
+
+    .promo-btn-ghost {
+      color: #edf4ff;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.42);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 560ms cubic-bezier(0.2, 1, 0.25, 1), transform 560ms cubic-bezier(0.2, 1, 0.25, 1);
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes drift {
+      0%,
+      100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @media (max-width: 1020px) {
+      .hero-inner,
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+
+      .report-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .checklist-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .promo-proof-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner { padding: 8px 14px; }
+
+      .top-links {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .top-links a { font-size: 13px; }
+
+      .hero { padding: 56px 14px 44px; }
+
+      .hero-main { padding: 24px; }
+
+      .main { padding: 0 14px 70px; }
+
+      .section { padding: 56px 0; }
+
+      .report-grid { grid-template-columns: 1fr; }
+
+      .stat-grid { grid-template-columns: 1fr 1fr 1fr; }
+
+      .promo-points { grid-template-columns: 1fr; }
+
+      .promo-proof-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+
+      .hero::before,
+      .hero::after,
+      .reveal,
+      .card,
+      .btn,
+      .top-progress > span { animation: none !important; transition: none !important; }
+
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#hero">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>RestMate</span>
+      </a>
+      <nav class="top-links" aria-label="Guide sections">
+        <a href="#workflow" class="anchor-link">Workflow</a>
+        <a href="#setup" class="anchor-link">Setup</a>
+        <a href="#voyage" class="anchor-link">Voyage</a>
+        <a href="#crew" class="anchor-link">Crew Grid</a>
+        <a href="#reports" class="anchor-link">Reports</a>
+        <a href="#json" class="anchor-link">JSON</a>
+        <a href="#checklist" class="anchor-link">Checklist</a>
+        <a href="#faq" class="anchor-link">FAQ</a>
+        <a href="restmate_demo.html" class="demo-link" target="_blank" rel="noopener">Open Demo</a>
+      </nav>
+    </div>
+  </header>
+
+  <section id="hero" class="hero">
+    <div class="hero-inner">
+      <div class="hero-main reveal">
+        <div class="tag">RestMate.exe / Crew Rest Hour Recording</div>
+        <h1>One page to master RestMate monthly filling</h1>
+        <p>This guide is aligned with the current RestMate behavior, including the <strong>7-day pre-month buffer</strong>, updated checks, and the latest month kick-off workflow.</p>
+        <div class="hero-actions">
+          <a href="#workflow" class="btn btn-primary">Start with standard workflow</a>
+          <a href="restmate_demo.html" class="btn btn-ghost" target="_blank" rel="noopener">Go to static demo page</a>
+        </div>
+      </div>
+      <aside class="hero-side reveal">
+        <div class="stat-card">
+          <div class="stat-grid">
+            <div class="stat-item">
+              <span class="stat-value" data-count="7">7</span>
+              <small>Buffer Days</small>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" data-count="48">48</span>
+              <small>Half-hour Slots</small>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" data-count="46">46</span>
+              <small>Max Crew</small>
+            </div>
+          </div>
+          <div class="chips" aria-label="Core reminders">
+            <span class="chip">Import first, then switch month</span>
+            <span class="chip">Checks before print</span>
+            <span class="chip">Merge requires same IMO + month</span>
+          </div>
+        </div>
+        <div class="note-card">
+          <strong>Latest behavior note</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">On startup, RestMate may auto-try buffer import from local DB. For official month roll-over, still perform manual <code>Import JSON</code> and verify <code>Checks</code>.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main class="main">
+    <section id="workflow" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">Workflow / Standard sequence</div>
+        <h2>Recommended month-start sequence (10 steps)</h2>
+        <p class="section-desc">The most important order is always: import previous month first, switch Report Month next, and only then start filling the new month.</p>
+      </div>
+
+      <div class="grid-two">
+        <div class="timeline reveal">
+          <article class="step"><strong>Open RestMate.exe</strong><span>Confirm header and tabs load correctly.</span></article>
+          <article class="step"><strong>Import previous month JSON</strong><span>Load the latest confirmed file from last month to seed buffer data.</span></article>
+          <article class="step"><strong>Switch Report Month in Setup</strong><span>Change to the target month to rebuild the month date range.</span></article>
+          <article class="step"><strong>Press Refresh Data / Clear Setting</strong><span>Reorganize crew status mapping and clear month-specific voyage settings.</span></article>
+          <article class="step"><strong>Verify Setup fields</strong><span>Vessel Name, IMO No., Prepared By, National Holidays, and Crew List.</span></article>
+          <article class="step"><strong>Fill Voyage Control</strong><span>Enter UTC Offset per ship date and handle timezone or IDL events.</span></article>
+          <article class="step"><strong>Fill Crew Grid</strong><span>Enter x/c/w/t marks by crew and date at 30-minute resolution.</span></article>
+          <article class="step"><strong>Review personal and summary reports</strong><span>Check Personal Monthly, Summary, and OT Summary before printing.</span></article>
+          <article class="step"><strong>Resolve Exceptions and Checks</strong><span>Fix missing values and warnings before final output.</span></article>
+          <article class="step"><strong>Export final JSON backup</strong><span>Save and hand over the final state for traceability.</span></article>
+        </div>
+
+        <div class="reveal" style="display:grid;gap:12px">
+          <div class="warn-box"><strong>Critical:</strong> skipping Step 2 can break month-start rolling 7-day calculations due to missing pre-month history.</div>
+          <div class="ok-box"><strong>Same-month continuation:</strong> if you are only continuing the same month, import that month JSON and continue directly.</div>
+          <div class="info-box"><strong>Kick Off restriction:</strong> RestMate blocks kick-off usage for previous month or earlier records.</div>
+          <div class="card">
+            <h3>Tab reference</h3>
+            <p>Setup, Voyage Control, Crew Grid, Personal Monthly, Summary, OT Summary, Exceptions, Merge, Checks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="setup" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">Setup / Core data</div>
+        <h2>Setup drives every downstream calculation</h2>
+        <p class="section-desc">Report Month and Crew List values are foundational. Incorrect setup causes downstream report and compliance errors.</p>
+      </div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>Field</th><th>How to fill</th><th>Why it matters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>Vessel Name</code></td><td>Enter vessel name (example: Amis Champion)</td><td>Shown on reports and data files</td></tr>
+            <tr><td><code>IMO No.</code></td><td>Enter IMO number</td><td>Used as strict identity check during merge</td></tr>
+            <tr><td><code>Report Month</code></td><td>Select YYYY-MM</td><td>Defines date range, JSON naming, and buffer relation</td></tr>
+            <tr><td><code>Prepared By</code></td><td>Enter preparer name</td><td>Used in records and OT report areas</td></tr>
+            <tr><td><code>National Holidays</code></td><td>One date per line, <code>yyyy-mm-dd</code></td><td>Marks special days in report views</td></tr>
+            <tr><td><code>Crew List</code></td><td>Name, Rank, Status, Sign Date, Opening CR, Std Hrs</td><td>Primary source for grid mapping and summaries</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-two" style="margin-top:14px">
+        <article class="card reveal">
+          <h3>Crew status and limits</h3>
+          <ul>
+            <li><strong>On Board</strong>: most common full-month status.</li>
+            <li><strong>Sign On</strong>: pre-sign-on cells become automatic sign markers.</li>
+            <li><strong>Sign Off</strong>: post-sign-off cells become automatic sign markers.</li>
+            <li>Crew count range is <strong>23 minimum</strong> to <strong>46 maximum</strong>.</li>
+          </ul>
+        </article>
+        <article class="card reveal">
+          <h3>Refresh Data / Clear Setting behavior</h3>
+          <ul>
+            <li>Converts eligible Sign On rows to On Board.</li>
+            <li>Removes eligible Sign Off rows.</li>
+            <li>Fills blank status rows to On Board when crew data exists.</li>
+            <li>Remaps crew IDs and clears report-month voyage inputs.</li>
+          </ul>
+          <p style="margin-top:10px;color:var(--warn)">Export first. This action clears UTC offset/event/affected time inputs for report-month dates.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="voyage" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">Voyage Control / UTC and day length</div>
+        <h2>Voyage data is the base for 24h and 7-day compliance math</h2>
+        <p class="section-desc">Each row is one vessel-level ship date. UTC changes alter day length. IDL skip/repeat must be explicitly reviewed.</p>
+      </div>
+
+      <div class="grid-two">
+        <article class="card reveal">
+          <h3>Field logic</h3>
+          <ul>
+            <li><code>In Report</code>: <code>YES</code> for report month, <code>BUFFER</code> for 7 pre-month dates.</li>
+            <li><code>UTC Offset</code>: supports integer and half-hour values.</li>
+            <li><code>Auto Event</code>: inferred from offset deltas.</li>
+            <li><code>Event Override</code>: use only for special manual cases.</li>
+            <li><code>Affected Time</code>: start hour impacted by timezone event.</li>
+          </ul>
+        </article>
+        <article class="card reveal">
+          <h3>Practical offset filling</h3>
+          <ul>
+            <li>Enter the first valid offset, then only change on actual timezone shift dates.</li>
+            <li><code>+8 -> +9</code> usually becomes CLOCK_FORWARD with 23-hour day.</li>
+            <li><code>+9 -> +8</code> usually becomes CLOCK_BACKWARD with 25-hour day.</li>
+            <li>Blank offset produces missing state and check warnings.</li>
+            <li>IDL_SKIP day length is 0; IDL_REPEAT creates repeat-date behavior.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="symbol-row reveal">
+        <span class="symbol-pill sym-ok"><i>O</i>Pass / complete</span>
+        <span class="symbol-pill sym-info"><i>@</i>Special date state</span>
+        <span class="symbol-pill sym-err"><i>X</i>Missing / non-compliant</span>
+        <span class="symbol-pill sym-warn"><i>!</i>Warning requiring review</span>
+      </div>
+    </section>
+
+    <section id="crew" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">Crew Grid / daily entry</div>
+        <h2>Use 30-minute marks for precise rest/work records</h2>
+        <p class="section-desc">Crew Grid captures per-crew, per-date activity. Timezone and IDL affected cells should be reviewed first.</p>
+      </div>
+
+      <div class="grid-two">
+        <article class="card reveal">
+          <h3>Mark definitions</h3>
+          <ul>
+            <li><code>x</code>: Rest</li>
+            <li><code>c</code>: Comp Rest</li>
+            <li><code>w</code>: Work</li>
+            <li><code>t</code>: OT</li>
+            <li><code>-</code>: automatic sign marker (non-applicable slots)</li>
+          </ul>
+          <p style="margin-top:10px;color:var(--muted)">Cycle order: <strong>x -> c -> w -> t -> x</strong>.</p>
+        </article>
+        <article class="card reveal">
+          <h3>Quick operations</h3>
+          <ul>
+            <li><code>Copy Previous Day</code>: duplicate same crew previous date.</li>
+            <li><code>Copy Selected Day</code>: store currently selected grid snapshot.</li>
+            <li><code>Paste Copied Day</code>: apply copied snapshot to current target.</li>
+            <li><code>Clear Day</code>: reset selected day to default rest grid.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="reports" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">Reports and checks / pre-delivery verification</div>
+        <h2>Treat checks as mandatory before print or handover</h2>
+        <p class="section-desc">After filling, review all report layers and clear unresolved issues in Exceptions and Checks.</p>
+      </div>
+
+      <div class="report-grid reveal">
+        <article class="report-card">
+          <h3>Personal Monthly</h3>
+          <p>Single-crew month review with <code>&ge;6H</code>, <code>&ge;10H</code>, <code>&Sigma;7D</code>, <code>&ge;77</code>, plus OT/Comp context.</p>
+          <p style="margin-top:8px">If <code>#1</code>, <code>#2</code>, or <code>#3</code> shows <code>!</code> or <code>X</code>, compensatory rest is required.</p>
+        </article>
+        <article class="report-card">
+          <h3>Summary</h3>
+          <p>Whole-vessel daily aggregation for monthly filing and department review.</p>
+        </article>
+        <article class="report-card">
+          <h3>OT Summary</h3>
+          <p>Aggregated OT values with timezone/IDL statistics and notice context.</p>
+        </article>
+        <article class="report-card">
+          <h3>Exceptions</h3>
+          <p>Root-cause list for rest-hour exceptions, especially when you see <code>!</code> or <code>X</code>.</p>
+        </article>
+        <article class="report-card">
+          <h3>Checks</h3>
+          <p>Data integrity guardrail. Includes month setup, offsets, buffer rows, comp rest, and warning counts.</p>
+        </article>
+        <article class="report-card">
+          <h3>Expected quality gate</h3>
+          <ul>
+            <li>Critical <code>X</code> items resolved.</li>
+            <li>All <code>!</code> items reviewed and explainable.</li>
+            <li>Printed outputs verified against final data state.</li>
+          </ul>
+        </article>
+        <article class="report-card">
+          <h3>Compensatory rest mechanism</h3>
+          <ul>
+            <li>Trigger: any <code>!</code> or <code>X</code> on <code>#1</code>, <code>#2</code>, <code>#3</code> in Personal Monthly.</li>
+            <li>Daily deficit: check <code>DFCT (Deficit)</code>; a negative value is the hours to recover for that day.</li>
+            <li>Monthly deficit: check <code>Total DFCT (Total Deficit)</code>; a negative value is the monthly total to recover.</li>
+            <li>Recovery source must be future surplus rest after the violation date, not earlier surplus rest.</li>
+            <li>Surplus rest means daily rolling 24h rest above 11h; 11h or below gives zero surplus rest for recovery.</li>
+            <li>Recovery complete when <code>OA BAL (Overall Balance)</code> returns from negative to 0.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="json" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">JSON / backup, import, merge</div>
+        <h2>Use JSON operations to keep work safe and auditable</h2>
+        <p class="section-desc">Consistent export habits prevent data loss. Import and merge should always be followed by checks.</p>
+      </div>
+
+      <div class="grid-two">
+        <article class="card reveal">
+          <h3>Export JSON</h3>
+          <ul>
+            <li>Default name: <code>ot33-YYYY-MM.json</code>.</li>
+            <li>If month is not set yet: <code>ot33-backup.json</code>.</li>
+            <li>Export after each session and before major actions.</li>
+            <li>Keep versioned files for rollback and handover evidence.</li>
+          </ul>
+        </article>
+
+        <article class="card reveal">
+          <h3>Import JSON month-start routine</h3>
+          <ul>
+            <li>Import previous month final JSON first.</li>
+            <li>Switch <code>Report Month</code> to the new month.</li>
+            <li>Press <code>Refresh Data / Clear Setting</code>.</li>
+            <li>Refill voyage offsets and verify <code>Pre-month buffer</code> checks.</li>
+          </ul>
+          <p style="margin-top:10px;color:var(--warn)">Import replaces the current on-screen state. Export before importing.</p>
+        </article>
+      </div>
+
+      <div class="card reveal" style="margin-top:14px">
+        <h3>Merge JSON (two-source consolidation)</h3>
+        <p>Use when two teams filled the same vessel/month separately. Merge is strict and rejects incompatible inputs.</p>
+        <ul>
+          <li>Required: same <code>IMO No.</code>, same <code>Report Month</code>, valid RestMate JSONs.</li>
+          <li>Rejected if merged active crew would exceed <strong>46</strong>.</li>
+          <li>Rejected if first two crew records are identical (merge not needed).</li>
+          <li>Output file: <code>ot33-YYYY-MM-merged.json</code> and immediate apply to current view.</li>
+          <li>Voyage data comes from the primary source (first merged source), so re-check Voyage and Checks after merge.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="checklist" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">Checklist / final handover gate</div>
+        <h2>Monthly delivery checklist</h2>
+        <p class="section-desc">Your tick state is saved locally in browser storage so you can continue later.</p>
+      </div>
+
+      <div class="checklist-wrap reveal">
+        <div class="checklist-grid" id="checklistGrid">
+          <label class="check-item"><input type="checkbox" data-check="1" /><span>Setup: Vessel Name, IMO No., and Report Month are completed</span></label>
+          <label class="check-item"><input type="checkbox" data-check="2" /><span>Setup: Crew Name, Rank, Status, and Sign Date are verified</span></label>
+          <label class="check-item"><input type="checkbox" data-check="3" /><span>Voyage: all report dates have UTC offsets</span></label>
+          <label class="check-item"><input type="checkbox" data-check="4" /><span>Voyage: pre-month 7-day buffer rows are complete and reviewed</span></label>
+          <label class="check-item"><input type="checkbox" data-check="5" /><span>Crew Grid: all active crew daily records are filled</span></label>
+          <label class="check-item"><input type="checkbox" data-check="6" /><span>Exceptions and Checks: critical X items are resolved</span></label>
+          <label class="check-item"><input type="checkbox" data-check="7" /><span>Compensatory rest deficits were recovered and OA BAL returned to 0</span></label>
+          <label class="check-item"><input type="checkbox" data-check="8" /><span>Personal Monthly, Summary, and OT Summary were reviewed for print</span></label>
+          <label class="check-item"><input type="checkbox" data-check="9" /><span>Final JSON export has been saved and archived</span></label>
+        </div>
+        <div class="check-tools">
+          <span id="checkCount">Completed 0 / 9</span>
+          <button type="button" id="resetChecklist">Reset checks</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section">
+      <div class="section-head reveal">
+        <div class="eyebrow">FAQ / common blockers</div>
+        <h2>Most frequent questions</h2>
+      </div>
+
+      <div class="faq reveal">
+        <details>
+          <summary>Why are there BUFFER dates before month start?</summary>
+          <p>RestMate uses the previous <strong>7 days</strong> to calculate rolling 7-day compliance at the beginning of the month. BUFFER dates are for calculation and are not printed as official report dates.</p>
+        </details>
+        <details>
+          <summary>Do I always need to import previous month first?</summary>
+          <p>For formal month roll-over, yes. This provides the required source for pre-month offsets and crew-day grids. Without it, month-start rolling checks can be incomplete.</p>
+        </details>
+        <details>
+          <summary>Why did one UTC offset change cascade to later dates?</summary>
+          <p>This is expected behavior. RestMate assumes the same offset continues until the next timezone change date.</p>
+        </details>
+        <details>
+          <summary>Why does Checks show Auto buffer import warning?</summary>
+          <p>Usually the local previous-month snapshot is missing or incomplete. Import the prior month JSON manually and check buffer offset/grid status again.</p>
+        </details>
+        <details>
+          <summary>When is compensatory rest required?</summary>
+          <p>Use a simple trigger rule: if <code>#1</code>, <code>#2</code>, or <code>#3</code> shows <code>!</code> or <code>X</code> (linked to <code>&ge;6H</code>, <code>&ge;10H</code>, <code>&Sigma;7D</code>), the record is non-compliant and compensatory rest is required.</p>
+        </details>
+        <details>
+          <summary>How much compensatory rest is needed?</summary>
+          <p>Use both fields: <code>DFCT</code> for daily deficit and <code>Total DFCT</code> for monthly deficit. Any negative value is a deficit that must be recovered.</p>
+        </details>
+        <details>
+          <summary>What is the difference between DFCT and Total DFCT?</summary>
+          <p><code>DFCT</code> shows how many hours are missing for that specific day (if negative). <code>Total DFCT</code> shows the month-level deficit/surplus; if negative, the month is still short.</p>
+        </details>
+        <details>
+          <summary>Can earlier surplus rest be used to offset a later violation?</summary>
+          <p>No. Recovery must come from surplus rest generated after the violation occurs. Earlier surplus rest cannot be used to backfill a later non-compliant day.</p>
+        </details>
+        <details>
+          <summary>What counts as surplus rest for compensation?</summary>
+          <p>Surplus rest is only the portion above 11 hours in the day's rolling 24h rest total. If a day is 11 hours or below, it contributes no surplus rest for compensation.</p>
+        </details>
+        <details>
+          <summary>When is the deficit considered fully recovered?</summary>
+          <p>When <code>OA BAL (Overall Balance)</code> moves from negative back to <code>0</code>, the deficit is considered fully compensated.</p>
+        </details>
+        <details>
+          <summary>Why were Crew IDs changed after merge?</summary>
+          <p>Merge reorders and remaps crew IDs so grids and notes from both files map correctly in one dataset. Use merge preview and final Crew List as source of truth.</p>
+        </details>
+        <details>
+          <summary>My data disappeared after import. Is it lost?</summary>
+          <p>Import replaces the current in-memory view with selected JSON content. Export before import to keep a recoverable copy.</p>
+        </details>
+      </div>
+
+      <div class="footer reveal">
+        This guide is written for current RestMate behavior, including the 7-day buffer model and RestMate.exe operational workflow.
+      </div>
+    </section>
+
+    <section id="promo" class="section promo-section">
+      <div class="promo-wrap reveal">
+        <h2 class="promo-headline">Ready to modernize crew rest-hour reporting?</h2>
+        <p class="promo-copy">RestMate is designed for vessel teams and shore offices that need faster monthly closure, fewer manual mistakes, and clearer compliance records. If your team is still relying on spreadsheet-heavy workflows, this is a practical upgrade path.</p>
+        <ul class="promo-points">
+          <li>Built-in month roll-over workflow with pre-month buffer continuity</li>
+          <li>Unified setup, voyage, crew grid, checks, and JSON handover in one tool</li>
+          <li>Operationally friendly for onboard users and audit-facing shore teams</li>
+        </ul>
+        <p class="promo-subtitle">Why operators choose RestMate</p>
+        <div class="promo-proof-grid">
+          <article class="promo-proof">
+            <h3>Faster month-end closure</h3>
+            <p>Teams finish reporting cycles with less back-and-forth because setup, voyage logic, and crew records stay connected in one flow.</p>
+          </article>
+          <article class="promo-proof">
+            <h3>Lower compliance risk</h3>
+            <p>Built-in checks highlight missing offsets, deficits, and data gaps before reports are printed or submitted for audit.</p>
+          </article>
+          <article class="promo-proof">
+            <h3>Stronger handover quality</h3>
+            <p>Structured JSON export/import and merge process makes onboard-to-shore collaboration more traceable and consistent.</p>
+          </article>
+        </div>
+        <p class="promo-subtitle">Business impact in the first 90 days</p>
+        <ul class="promo-points">
+          <li>Less time spent validating spreadsheets across onboard and shore teams</li>
+          <li>More predictable monthly reporting quality with fewer last-minute corrections</li>
+          <li>Clearer audit trail for supervisors, charterers, and compliance reviewers</li>
+        </ul>
+        <div class="promo-actions">
+          <a class="promo-btn promo-btn-primary" href="#workflow">See Standard Workflow</a>
+          <a class="promo-btn promo-btn-ghost" href="#checklist">Use Delivery Checklist</a>
+        </div>
+        <div class="promo-actions">
+          <a class="promo-btn promo-btn-primary" href="restmate_demo.html" target="_blank" rel="noopener">Try RestMate Demo</a>
+          <a class="promo-btn promo-btn-ghost" href="#faq">Explore FAQ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var progressEl = document.getElementById("scrollProgress");
+      var sectionNodes = Array.prototype.slice.call(document.querySelectorAll("section[id]"));
+      var navLinks = Array.prototype.slice.call(document.querySelectorAll(".anchor-link"));
+      var checklistInputs = Array.prototype.slice.call(document.querySelectorAll("#checklistGrid input[type='checkbox']"));
+      var checkCountEl = document.getElementById("checkCount");
+      var resetChecklistBtn = document.getElementById("resetChecklist");
+      var checklistStorageKey = "restmate_tutorial_checklist_v2";
+      var counters = Array.prototype.slice.call(document.querySelectorAll("[data-count]"));
+      var counterStarted = false;
+
+      function updateProgress() {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        var doc = document.documentElement;
+        var max = Math.max(doc.scrollHeight - window.innerHeight, 1);
+        var percent = Math.min(100, Math.max(0, (scrollTop / max) * 100));
+        progressEl.style.width = percent.toFixed(2) + "%";
+      }
+
+      function updateActiveNav() {
+        var current = "";
+        for (var i = 0; i < sectionNodes.length; i += 1) {
+          var rect = sectionNodes[i].getBoundingClientRect();
+          if (rect.top <= 110) current = sectionNodes[i].id;
+        }
+        navLinks.forEach(function (link) {
+          var target = (link.getAttribute("href") || "").replace("#", "");
+          if (target === current) link.classList.add("active");
+          else link.classList.remove("active");
+        });
+      }
+
+      function revealSections() {
+        var nodes = document.querySelectorAll(".reveal");
+        if (reducedMotion || !("IntersectionObserver" in window)) {
+          Array.prototype.forEach.call(nodes, function (n) { n.classList.add("show"); });
+          return;
+        }
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("show");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: "0px 0px -24px 0px" });
+        Array.prototype.forEach.call(nodes, function (n) { observer.observe(n); });
+      }
+
+      function animateCounters() {
+        if (counterStarted) return;
+        counterStarted = true;
+        counters.forEach(function (el) {
+          var target = Number(el.getAttribute("data-count")) || 0;
+          if (reducedMotion) {
+            el.textContent = String(target);
+            return;
+          }
+          var start = 0;
+          var duration = 820;
+          var startAt = performance.now();
+          function frame(now) {
+            var p = Math.min(1, (now - startAt) / duration);
+            var eased = 1 - Math.pow(1 - p, 3);
+            var value = Math.round(start + (target - start) * eased);
+            el.textContent = String(value);
+            if (p < 1) requestAnimationFrame(frame);
+          }
+          requestAnimationFrame(frame);
+        });
+      }
+
+      function initCounterTrigger() {
+        var hero = document.getElementById("hero");
+        if (!hero) return;
+        if (reducedMotion || !("IntersectionObserver" in window)) {
+          animateCounters();
+          return;
+        }
+        var once = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              animateCounters();
+              once.disconnect();
+            }
+          });
+        }, { threshold: 0.35 });
+        once.observe(hero);
+      }
+
+      function lockFaqSingleOpen() {
+        var details = Array.prototype.slice.call(document.querySelectorAll("details"));
+        details.forEach(function (item) {
+          item.addEventListener("toggle", function () {
+            if (!item.open) return;
+            details.forEach(function (d) {
+              if (d !== item) d.open = false;
+            });
+          });
+        });
+      }
+
+      function loadChecklist() {
+        try {
+          var raw = localStorage.getItem(checklistStorageKey);
+          if (!raw) return {};
+          return JSON.parse(raw) || {};
+        } catch (_err) {
+          return {};
+        }
+      }
+
+      function saveChecklist() {
+        var payload = {};
+        checklistInputs.forEach(function (input) {
+          payload[input.getAttribute("data-check")] = !!input.checked;
+        });
+        try {
+          localStorage.setItem(checklistStorageKey, JSON.stringify(payload));
+        } catch (_err) {
+          return;
+        }
+      }
+
+      function updateChecklistCount() {
+        var done = checklistInputs.filter(function (input) { return input.checked; }).length;
+        checkCountEl.textContent = "Completed " + done + " / " + checklistInputs.length;
+      }
+
+      function initChecklist() {
+        var saved = loadChecklist();
+        checklistInputs.forEach(function (input) {
+          var key = input.getAttribute("data-check");
+          input.checked = !!saved[key];
+          input.addEventListener("change", function () {
+            saveChecklist();
+            updateChecklistCount();
+          });
+        });
+        resetChecklistBtn.addEventListener("click", function () {
+          checklistInputs.forEach(function (input) { input.checked = false; });
+          saveChecklist();
+          updateChecklistCount();
+        });
+        updateChecklistCount();
+      }
+
+      var ticking = false;
+      window.addEventListener("scroll", function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          updateProgress();
+          updateActiveNav();
+          ticking = false;
+        });
+      }, { passive: true });
+
+      revealSections();
+      initCounterTrigger();
+      lockFaqSingleOpen();
+      initChecklist();
+      updateProgress();
+      updateActiveNav();
+    })();
+  </script>
+</body>
+</html>
