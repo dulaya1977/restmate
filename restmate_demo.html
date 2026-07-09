@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RestMate Demo (UI Only)</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --ink: #162033;
+      --muted: #667085;
+      --line: #d8dee9;
+      --head: #18324a;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --input: #fff2cc;
+      --rest: #d1fae5;
+      --ot: #fee2e2;
+      --comp: #dbeafe;
+      --off: #e5e7eb;
+      --work: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      font-size: 13px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 18px;
+      background: var(--head);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .brand-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f8fafc 0%, #bfdbfe 52%, #5eead4 100%);
+      color: #18324a;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 2px 8px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+    }
+
+    .brand-logo::before {
+      content: "R";
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-logo::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      bottom: 7px;
+      height: 2px;
+      border-radius: 999px;
+      background: #18324a;
+      box-shadow: 0 -5px 0 rgba(24, 50, 74, 0.42);
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      padding: 7px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    button.primary { background: var(--blue); color: white; border-color: var(--blue); }
+    button.danger { color: var(--red); border-color: #fecaca; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mock-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      color: #e8f1ff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    nav {
+      display: flex;
+      gap: 6px;
+      padding: 10px 18px 0;
+      background: var(--bg);
+      position: sticky;
+      top: 56px;
+      z-index: 20;
+      overflow-x: auto;
+    }
+
+    nav button {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      background: #eef2f7;
+    }
+
+    nav button.active {
+      background: var(--panel);
+      border-bottom-color: var(--panel);
+      font-weight: 700;
+    }
+
+    main { padding: 12px 18px 24px; }
+
+    .notice {
+      margin: 0 0 10px;
+      padding: 8px 10px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1e3a8a;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel h2 {
+      font-size: 15px;
+      margin: 0 0 10px;
+    }
+
+    .grid-form {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+    }
+
+    input, select, textarea {
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 6px 8px;
+      background: white;
+      min-width: 0;
+    }
+
+    input.user, select.user, textarea.user { background: var(--input); }
+
+    .statusbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      background: white;
+      max-height: 380px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 4px 6px;
+      min-width: 72px;
+      height: 28px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #d9eaf7;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    td.center, th.center { text-align: center; }
+    td.num, th.num { text-align: right; }
+    td.input-cell { background: var(--input); }
+
+    .symbol {
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .sym-O { color: #166534; background: #dcfce7; }
+    .sym-at { color: #1d4ed8; background: #dbeafe; }
+    .sym-warn { color: #92400e; background: #fef3c7; }
+    .sym-X { color: #991b1b; background: #fee2e2; }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      color: var(--muted);
+    }
+
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--line);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .mark-rest { background: var(--rest); }
+    .mark-comp { background: var(--comp); }
+    .mark-work { background: var(--work); }
+    .mark-ot { background: var(--ot); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: left;
+      color: var(--muted);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 20px;
+      color: var(--ink);
+      margin-top: 2px;
+    }
+
+    .small {
+      color: #dbe7fb;
+      font-size: 12px;
+    }
+
+    @media (max-width: 1080px) {
+      .grid-form { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+      .metrics { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+    }
+
+    @media (max-width: 680px) {
+      header { flex-direction: column; align-items: flex-start; }
+      nav { top: 98px; }
+      main { padding: 10px; }
+      .grid-form, .metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="brand-title"><span class="brand-logo" aria-hidden="true"></span><span>RestMate - Rest Hour Record</span></h1>
+    <div class="toolbar">
+      <span class="mock-tag">UI Demo Only</span>
+      <span class="small">No calculations, no storage, no import/export actions</span>
+      <button type="button">Export JSON</button>
+      <button type="button">Import JSON</button>
+      <button type="button" class="danger">Reset</button>
+    </div>
+  </header>
+
+  <nav aria-label="Static tabs">
+    <button class="active" type="button">Setup</button>
+    <button type="button">Voyage Control</button>
+    <button type="button">Crew Grid</button>
+    <button type="button">Personal Monthly</button>
+    <button type="button">Summary</button>
+    <button type="button">OT Summary</button>
+    <button type="button">Exceptions</button>
+    <button type="button">Merge</button>
+    <button type="button">Checks</button>
+  </nav>
+
+  <main>
+    <div class="notice">This demo keeps the visual structure of RestMate.exe only. All business logic and calculations are intentionally removed.</div>
+
+    <section class="panel">
+      <h2>Setup - Vessel</h2>
+      <div class="grid-form">
+        <label>Vessel Name<input class="user" value="MV Ocean Explorer" readonly /></label>
+        <label>IMO No.<input class="user" value="9636369" readonly /></label>
+        <label>Report Month<input class="user" type="month" value="2026-06" readonly /></label>
+        <label>Prepared By<input class="user" value="ISM Dept." readonly /></label>
+        <label>National Holidays<textarea class="user" rows="2" readonly>2026-06-19&#10;2026-06-25</textarea></label>
+        <label>New Month Action<button type="button" class="primary">Refresh Data / Clear Setting</button></label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="statusbar">
+        <h2>Crew List</h2>
+        <div>
+          <button type="button">Remove Crew</button>
+          <button type="button">Add Crew</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>No</th><th>Crew ID</th><th>Name</th><th>Rank</th><th>Status</th><th>Sign On/Off Date</th><th>Opening CR</th><th>Std Hrs</th><th>Remarks</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="center">1</td><td class="input-cell">C001</td><td class="input-cell">CHEN, Wei</td><td class="input-cell">Master</td><td class="input-cell">On Board</td><td class="input-cell"></td><td class="input-cell num">0</td><td class="input-cell num">8</td><td class="input-cell"></td></tr>
+            <tr><td class="center">2</td><td class="input-cell">C002</td><td class="input-cell">KIM, Minho</td><td class="input-cell">C/O</td><td class="input-cell">On Board</td><td class="input-cell"></td><td class="input-cell num">0</td><td class="input-cell num">8</td><td class="input-cell"></td></tr>
+            <tr><td class="center">3</td><td class="input-cell">C003</td><td class="input-cell">PEREZ, Juan</td><td class="input-cell">A/B</td><td class="input-cell">Sign On</td><td class="input-cell">2026-06-02</td><td class="input-cell num">0</td><td class="input-cell num">8</td><td class="input-cell">Joining crew</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Voyage Control</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Seq</th><th>Date</th><th>In Report</th><th>UTC Offset</th><th>Auto Event</th><th>Event Override</th><th>Affected Time</th><th>Day Length</th><th>Status</th><th>Symbol</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="center">1</td><td>2026-05-25</td><td class="center">BUFFER</td><td class="input-cell num">8</td><td></td><td class="input-cell"></td><td class="input-cell"></td><td class="num">24</td><td>NORMAL</td><td class="symbol sym-O">O</td><td class="input-cell">Imported buffer</td></tr>
+            <tr><td class="center">2</td><td>2026-06-01</td><td class="center">YES</td><td class="input-cell num">8</td><td></td><td class="input-cell"></td><td class="input-cell"></td><td class="num">24</td><td>NORMAL</td><td class="symbol sym-O">O</td><td class="input-cell"></td></tr>
+            <tr><td class="center">3</td><td>2026-06-02</td><td class="center">YES</td><td class="input-cell num">9</td><td>CLOCK_FORWARD</td><td class="input-cell">CLOCK_FORWARD</td><td class="input-cell num">2</td><td class="num">23</td><td>SPECIAL</td><td class="symbol sym-at">@</td><td class="input-cell">UTC shift</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="statusbar">
+        <h2>Crew Grid</h2>
+        <div class="toolbar">
+          <label>Crew<select class="user"><option>C001 CHEN, Wei</option></select></label>
+          <label>Date<select class="user"><option>2026-06-02</option></select></label>
+          <button type="button">Copy Previous Day</button>
+          <button type="button">Copy Selected Day</button>
+          <button type="button">Paste Copied Day</button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i class="swatch mark-rest"></i>x Rest</span>
+        <span><i class="swatch mark-comp"></i>c Comp Rest</span>
+        <span><i class="swatch mark-work"></i>w Work</span>
+        <span><i class="swatch mark-ot"></i>t OT</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>00:00</th><th>00:30</th><th>01:00</th><th>01:30</th><th>02:00</th><th>02:30</th><th>03:00</th><th>03:30</th><th>04:00</th><th>04:30</th><th>05:00</th><th>05:30</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="center" style="background:var(--rest)">x</td><td class="center" style="background:var(--rest)">x</td><td class="center" style="background:var(--rest)">x</td><td class="center" style="background:var(--rest)">x</td><td class="center" style="background:var(--work)">w</td><td class="center" style="background:var(--work)">w</td><td class="center" style="background:var(--work)">w</td><td class="center" style="background:var(--ot)">t</td><td class="center" style="background:var(--ot)">t</td><td class="center" style="background:var(--comp)">c</td><td class="center" style="background:var(--comp)">c</td><td class="center" style="background:var(--rest)">x</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="statusbar">
+        <h2>Personal Monthly / Summary / Checks</h2>
+        <div class="toolbar">
+          <button type="button">Print</button>
+          <button type="button">Print All</button>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric">Crew<strong>Master - CHEN, Wei</strong></div>
+        <div class="metric">Total OT<strong>18.0</strong></div>
+        <div class="metric">TZ Events<strong>1</strong></div>
+        <div class="metric">Open Checks<strong>2</strong></div>
+      </div>
+      <div class="table-wrap" style="margin-bottom:10px">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>&ge;6H</th><th>#1</th><th>&ge;10H</th><th>#2</th><th>&Sigma;7D</th><th>Lack</th><th>#3</th><th>UTC</th><th>DFCT</th><th>Comp</th><th>OT</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2026-06-01</td><td class="num">8.0</td><td class="symbol sym-O">O</td><td class="num">13.5</td><td class="symbol sym-O">O</td><td class="num">88.0</td><td class="num">11.0</td><td class="symbol sym-O">O</td><td class="num">8</td><td class="num">3.5</td><td class="num">0.0</td><td class="num">1.0</td><td></td></tr>
+            <tr><td>2026-06-02</td><td class="num">5.5</td><td class="symbol sym-X">X</td><td class="num">9.5</td><td class="symbol sym-X">X</td><td class="num">76.0</td><td class="num">-1.0</td><td class="symbol sym-warn">!</td><td class="num">9</td><td class="num">-0.5</td><td class="num">2.0</td><td class="num">2.0</td><td>Review</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Check</th><th>Status</th><th>Detail</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Report month filled</td><td class="symbol sym-O">O</td><td>2026-06</td></tr>
+            <tr><td>UTC offsets filled</td><td class="symbol sym-O">O</td><td>0 report dates missing offset</td></tr>
+            <tr><td>Pre-month buffer offsets</td><td class="symbol sym-O">O</td><td>Imported from previous month</td></tr>
+            <tr><td>Timezone event review</td><td class="symbol sym-warn">!</td><td>1 event needs affected time review</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
